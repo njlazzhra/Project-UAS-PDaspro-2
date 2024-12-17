@@ -1,173 +1,136 @@
-program project_perpustakaan;
+program Transportation_Booking_Plan;
+//Project Lab Daspro for UAS
 uses crt;
+type
+  TTiket = record
+    NamaPenumpang: string;
+    StasiunKeberangkatan: string;
+    StasiunTujuan: string;
+    Harga: real;
+    WaktuKeberangkatan: string;
+    StasiunTransit: array[1..3] of string;
+    NomorBangku: integer;
+  end;
+
+const
+  Stasiun: array[1..8] of string = (
+    'Medan', 'Tebing Tinggi', 'Siantar', 'Lubuk Pakam', 'Tanjung Balai', 'Kisaran', 'Padang Halaban', 'Rantau Prapat');
+    
+  HargaTiket: array[1..8, 1..8] of real = 
+    ((0, 50000, 80000, 40000, 100000, 120000, 150000, 180000),
+    (50000, 0, 40000, 20000, 80000, 100000, 120000, 150000),
+    (80000, 40000, 0, 50000, 70000, 90000, 100000, 130000),
+    (30000, 40000, 60000, 20000, 90000, 110000, 130000, 160000),
+    (40000, 20000, 50000, 0, 85000, 105000, 125000, 155000),
+    (100000, 80000, 70000, 85000, 0, 30000, 50000, 80000),
+    (120000, 100000, 90000, 105000, 30000, 0, 20000, 60000),
+    (150000, 120000, 100000, 125000, 50000, 20000, 0, 40000));
+  WaktuKeberangkatan: array[1..8] of string =
+   ('06:00', '07:30', '09:00', '10:30', '12:00', '13:30', '15:00', '16:30');
+
 var
-choice, i: integer;
-valid, listbuku: boolean;
-choicee, keluar: string;
+  Tiket: array[1..5] of TTiket;
+  JumlahTiket, i, NomorBangku: integer;
+  IndeksKeberangkatan, IndeksTujuan: integer;
 
-X : array[1..5] of boolean;
-Nama : array[1..5] of string;
-label menu, list, pinjam, exitt;
+// Prosedur untuk menampilkan daftar stasiun
+procedure TampilkanStasiun;
+var
+  i: integer;
+begin
+  writeln('=== Here is a List of Available Station ===');
+  for i := 1 to 8 do
+    writeln(i, '. ', Stasiun[i]);
+end;
 
-procedure bukupinjam;
-    begin 
-        for i:= 1 to 5 do 
-            begin
-                if x[i] then
-                    writeln(nama[i]);
-            end;
-    end;
+// Fungsi untuk menghitung harga tiket
+function HitungHargaTiket(Keberangkatan, Tujuan: integer): real;
+begin
+  HitungHargaTiket := HargaTiket[Keberangkatan, Tujuan];
+end;
 
 begin
-    keluar:='tidak';
-    valid:= true;
-    
-    menu:
-        clrscr;
-        writeln('---------------------------------------------');
-        writeln('Welcome to the BookVerse Digital Library ^_^');
-        writeln('---------------------------------------------');
-        writeln('Dive into and Find your own Good Book here!');
-        writeln;
-        writeln('Menu: ');
-        writeln('1. Borrowing Books');
-        writeln('2. Returning Books');
-        writeln('3. Exit');
-        writeln;
-        write('Input your choice! '); readln(choice);
+  clrscr;
+  writeln('------------------------------------------------------');
+  writeln('Welcome to The TransiTech: Transportation Booking Plan');
+  writeln('------------------------------------------------------');
+  writeln;
+  TampilkanStasiun;
+  writeln;
+  
+  write('Input your ticket! (max. 5) '); readln(JumlahTiket);
+  if (JumlahTiket < 1) or (JumlahTiket > 5) then
+  begin
+    writeln('The tickets reaches the maximum limit.');
+    exit;
+  end;
 
-        Nama[1]:='[1] Algoritma dan Pemrograman: Teori dan Praktik dalam Pascal by Zarlis, M.';
-        Nama[2]:='[2] Pemrograman Pascal by B. Zarlis, M.';
-        Nama[3]:='[3] Dasar-Dasar Pemrograman Pascal: Teori dan Program Terapan by Andi';
-        Nama[4]:='[4] Algoritma dan Pemrograman by D. Rinaldi Munir';
-        Nama[5]:='[5] Algoritma dan Pemrograman Menggunakan Pascal, Edisi I by E. Kadir, Abdul, Heriy anto';
+  NomorBangku := 1;  
+  for i := 1 to JumlahTiket do
+  begin
+    writeln;
+    writeln('Data for ticket ', i, ':');
+    write('Passenger Name : ');
+    readln(Tiket[i].NamaPenumpang);
+    writeln;
+    writeln('Select the Departure Station');
+    writeln;
+    TampilkanStasiun;
+    write('Input the Number : '); readln(IndeksKeberangkatan);
+    if (IndeksKeberangkatan < 1) or (IndeksKeberangkatan > 8) then
+    begin
+      writeln('The option is Invalid. Please select back your choice!');
+      exit;
+    end;
+    Tiket[i].StasiunKeberangkatan := Stasiun[IndeksKeberangkatan];
+    writeln;
+    writeln('Select the Destination Station!');
+    writeln;
+    TampilkanStasiun;
+    write('Input the Number : ');
+    readln(IndeksTujuan);
+    if (IndeksTujuan < 1) or (IndeksTujuan > 9) or (IndeksKeberangkatan = IndeksTujuan) then
+    begin
+      writeln('The option is Invalid. Please select back your choice!');
+      exit;
+    end;
+    Tiket[i].StasiunTujuan := Stasiun[IndeksTujuan];
+    Tiket[i].Harga := HitungHargaTiket(IndeksKeberangkatan, IndeksTujuan);
+    Tiket[i].WaktuKeberangkatan := WaktuKeberangkatan[IndeksKeberangkatan];
+    Tiket[i].NomorBangku := NomorBangku;  
+    Inc(NomorBangku);  
+    writeln;
+    writeln('Input Transit Station! (max.3, enter for skip):');
+    for NomorBangku := 1 to 3 do
+    begin
+      write('Transit ', NomorBangku, ': ');
+      readln(Tiket[i].StasiunTransit[NomorBangku]);
+    end;
+    writeln;
+  end;
 
-        case choice of
-        1: //Peminjaman Buku
-            begin
-                list:
-                clrscr;
-                writeln('-List of Books-');
-                writeln;
-                writeln('[1] Algoritma dan Pemrograman: Teori dan Praktik dalam Pascal by Zarlis, M.');
-                writeln('[2] Pemrograman Pascal by B. Zarlis, M.');
-                writeln('[3] Dasar-Dasar Pemrograman Pascal: Teori dan Program Terapan by Andi');
-                writeln('[4] Algoritma dan Pemrograman by D. Rinaldi Munir');
-                writeln('[5] Algoritma dan Pemrograman Menggunakan Pascal, Edisi I by E. Kadir, Abdul, Heriyanto');
-                writeln('[6] Back');
-                
-                if not valid then
-                write('The option is Invalid. Please select back your choice!');
-                valid:= true;
-
-                //klik buku yang mau dipinjam
-                writeln; readln(i);
-                if (i = 6) then
-                begin
-                goto menu;
-                end
-                else if (i > 6) then
-                begin
-                valid := false;
-                goto list;
-                end
-                else
-
-                writeln;
-                writeln(Nama[i]);
-                write('Do you wanna borrow it? ');
-                writeln('(yes/no) '); readln(choicee);
-
-                if (choicee = 'yes') then
-                    begin
-                        x[i]:= true;
-                        writeln;
-                        write('Book successfully borrowed!');
-                        readln;
-                        goto list;
-                    end
-                else
-                goto list;
-
-            end;
-
-        2: //Pengembalian Buku
-            begin
-                if x[1] or x[2] or x[3] or x[4] or x[5] then
-                listbuku:= true;
-
-                if listbuku then
-                    begin
-                        listbuku:= false;
-                        goto pinjam;
-                    end
-                else
-                    begin
-                        writeln;
-                        write('No books borrowed.'); readln;
-                        goto menu;
-                    end;
-            
-                pinjam:
-                writeln;
-                writeln('These are the books you borrowed.');
-                bukupinjam;
-                writeln;
-                writeln('1. Returning Books');
-                writeln('2. Back');
-                write('Input your choice! ');
-
-                if not valid then
-                write('The option is Invalid. Please select back your choice!');
-                valid:= true;
-                write; readln(choice);
-                writeln;
-
-                if (choice = 1) then
-                    begin
-                        bukupinjam;
-                        write('Input the Book Code! '); readln(i);
-                        x[i]:= false;
-                        writeln;
-                        write('Books successfully returned!'); readln;
-                        goto menu
-                    end
-
-                else if (choice = 2) then 
-                goto menu
-
-                else valid:= true;
-                goto pinjam;
-                end;
-
-        3: //keluar program
-            begin
-                repeat
-                clrscr;
-                write('Exit? ');
-                writeln('(yes/no?) '); readln(keluar);
-
-                    if (keluar = 'yes') then
-                        begin
-                            valid:= true;
-                            goto exitt;
-                        end
-                    else if (keluar = 'no') then
-                        begin
-                            valid:=true;
-                            goto menu
-                        end
-                    else
-                        valid:=false;
-
-                until valid;
-            end;
-        end;
-    exitt:
-    clrscr;
+  clrscr;
+  writeln('=== TransiTech Train Ticket ===');
+  writeln;
+  for i := 1 to JumlahTiket do
+  begin
+    writeln('Ticket ', i, ':');
+    writeln('Passenger Name    : ', Tiket[i].NamaPenumpang);
+    writeln('Departure         : ', Tiket[i].StasiunKeberangkatan);
+    writeln('Destination       : ', Tiket[i].StasiunTujuan);
+    writeln('Price             : Rp', Tiket[i].Harga:0:2);
+    writeln('Departure Time    : ', Tiket[i].WaktuKeberangkatan);
+    writeln('Seat Number       : ', Tiket[i].NomorBangku);
+    write('Transit           : ');
+    for NomorBangku := 1 to 3 do
+      if Tiket[i].StasiunTransit[NomorBangku] <> '' then
+        write(Tiket[i].StasiunTransit[NomorBangku], ' ');
+    writeln;
+  end;
     writeln;
     writeln('---------------------------------------------------------------------------------------------');
-    writeln('Thank you for choosing BookVerse Digital library. We look forward to seeing u again soon! ^_^');
+    writeln('Thank you for choosing TransiTech. We look forward to seeing u again soon! ^_^');
     writeln('---------------------------------------------------------------------------------------------');
     writeln;
+  readln;
 end.
