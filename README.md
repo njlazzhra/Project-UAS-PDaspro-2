@@ -1,4 +1,4 @@
-Nama Project  : TransItech: Transportation Booking Plan
+Nama Project  : Transitech: Transportation Booking Plan
 
 Nama Kelompok : ZenCode
 
